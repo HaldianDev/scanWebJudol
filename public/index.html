@@ -16,11 +16,18 @@
     let hasil = [];
 
     async function scan() {
-      const kw = document.getElementById("keyword").value;
-      if(!kw) return alert("Isi keyword dulu!");
-      const res = await fetch(`/api/scan?keyword=${encodeURIComponent(kw)}`);
-      hasil = await res.json();
-      document.getElementById("result").innerHTML = hasil.map(d => `<li>${d}</li>`).join("");
+      const kw = document.getElementById("keyword").value.trim();
+      if (!kw) return alert("Isi keyword dulu!");
+
+      try {
+        const res = await fetch(`/api/scan?keyword=${encodeURIComponent(kw)}`);
+        if (!res.ok) throw new Error("API error: " + res.status);
+
+        hasil = await res.json();
+        document.getElementById("result").innerHTML = hasil.map(d => `<li>${d}</li>`).join("");
+      } catch (e) {
+        alert("Gagal fetch data: " + e.message);
+      }
     }
 
     function exportCSV() {
