@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Judol Scanner</title>
+</head>
+<body>
+  <h2>🕵️ Judol Scanner (Vercel)</h2>
+
+  <input id="keyword" placeholder="Contoh: slot gacor" />
+  <button onclick="scan()">Scan</button>
+  <button onclick="exportCSV()">Export to CSV</button>
+
+  <ul id="result"></ul>
+
+  <script>
+    let hasil = [];
+
+    async function scan() {
+      const kw = document.getElementById("keyword").value;
+      if(!kw) return alert("Isi keyword dulu!");
+      const res = await fetch(`/api/scan?keyword=${encodeURIComponent(kw)}`);
+      hasil = await res.json();
+      document.getElementById("result").innerHTML = hasil.map(d => `<li>${d}</li>`).join("");
+    }
+
+    function exportCSV() {
+      if (!hasil.length) return alert("Belum ada data!");
+
+      let csv = "Domain\n" + hasil.join("\n");
+      let blob = new Blob([csv], { type: "text/csv" });
+      let url = URL.createObjectURL(blob);
+
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = "domain_judol.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
